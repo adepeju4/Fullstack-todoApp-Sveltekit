@@ -1,5 +1,6 @@
 
 import { Sequelize } from 'sequelize';
+import pg from "pg";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -10,7 +11,8 @@ if (!myURI) {
 }
 
 export const sequelize = new Sequelize(myURI, {
-  logging: false
+  logging: false,
+  dialectModule: pg
 });
 
 export const dbConn = async (): Promise<void> => {

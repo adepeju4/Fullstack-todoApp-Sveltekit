@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { dbConn } from '$lib/server/database';
+
 
 import { UnauthorizedError } from './utils/ErrorHandler';
 import { User, type UserInstance } from './sequelize/models/user.model';
@@ -28,7 +28,7 @@ export const catchAsync = (handler: RequestHandler): RequestHandler => {
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const path = event.url.pathname;
-	await dbConn();
+
 
 	const excluded = excludedPaths[path];
 
