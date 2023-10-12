@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 
-
 import { UnauthorizedError } from './utils/ErrorHandler';
 import { User, type UserInstance } from './sequelize/models/user.model';
 import type { Handle, RequestHandler } from '@sveltejs/kit';
@@ -28,7 +27,6 @@ export const catchAsync = (handler: RequestHandler): RequestHandler => {
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const path = event.url.pathname;
-
 
 	const excluded = excludedPaths[path];
 

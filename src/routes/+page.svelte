@@ -2,7 +2,6 @@
 	import PrivateRoute from '../Components/PrivateRoute.svelte';
 	import Pencil from 'svelte-material-icons/Pencil.svelte';
 	import { user } from '$lib/store';
-	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import Logout from '../Components/Logout.svelte';
@@ -10,10 +9,17 @@
 	import TodoList from '../Components/TodoList.svelte';
 
 	onMount(() => {
-		if (!$page.data.user) goto('/auth/login');
-		else {
-			user.set({ isAuthenticated: true, data: $page.data.user });
-		}
+		const verifyUser = async () => {
+			const response = await fetch('api/auth/verify');
+
+			const data = await response.json();
+
+			if (data.data) {
+				user.set({ isAuthenticated: true, data: data.data });
+			} else goto('/auth/login');
+		};
+
+		verifyUser();
 	});
 </script>
 

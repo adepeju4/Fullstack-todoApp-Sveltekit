@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { useFetch } from "../../../hooks.client";
+	import { useFetch } from '../../../hooks.client';
 	import { goto } from '$app/navigation';
-	import type { ResponseData } from "$lib/store";
+	import type { ResponseData } from '$lib/store';
 
 	let userInput = {
 		email: '',
@@ -24,20 +24,18 @@
 		});
 	};
 
-	$: if (data) {
-		goto('/');
-	}
+	$: if (data) goto('/', { replaceState: true });
 </script>
 
 <form on:submit={loginUser} class="login">
 	<label>
 		Email:
-		<input type="email" name="email" bind:value={userInput.email} required/>
+		<input type="email" name="email" bind:value={userInput.email} required />
 	</label>
 	<br />
 	<label>
 		Password:
-		<input type="password" name="password" bind:value={userInput.password} required/>
+		<input type="password" name="password" bind:value={userInput.password} required />
 	</label>
 	<br />
 	<p>
