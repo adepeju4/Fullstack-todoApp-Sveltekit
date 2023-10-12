@@ -17,7 +17,8 @@ declare global {
 			message: string;
 		 }
 		interface Locals {
-			user: UserInstance;
+			user?: UserInstance;
+			db: unknown
 		}
 
 		interface LoadInput {

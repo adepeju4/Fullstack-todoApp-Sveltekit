@@ -15,7 +15,7 @@ export const sequelize = new Sequelize(myURI, {
 
 export const dbConn = async (): Promise<void> => {
     try {
-      await sequelize.authenticate();
+       await sequelize.authenticate();
       console.log('Database connection established and tables loaded');
     } catch (e: unknown) {
       const error = e as Error;
