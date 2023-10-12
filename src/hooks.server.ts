@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { dbConn, sequelize } from '$lib/server/database';
+import { dbConn } from '$lib/server/database';
 
 import { UnauthorizedError } from './utils/ErrorHandler';
 import { User, type UserInstance } from './sequelize/models/user.model';
@@ -67,10 +67,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 				console.log(e);
 			}
 		}
-		sequelize.close();
+
 		return await resolve(event);
 	}
-	sequelize.close();
+
 	return await resolve(event);
 };
 
