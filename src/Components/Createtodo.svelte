@@ -1,21 +1,22 @@
 <script lang="ts">
-	import { todos, type ResponseData } from "$lib/store";
-	import { callSuccessToast, useFetch } from "../hooks.client";
+	import { todos } from '$lib/store';
+	import type { IFetchState, IUserFetchResponse } from '../app';
+	import { callSuccessToast, useFetch } from '../hooks.client';
 
 	let todo = {
 		title: '',
 		description: ''
 	};
 
-	let descripLength: number = 0
+	let descripLength: number = 0;
 	$: descripLength = todo.description.length;
 
-	const { executeFetch: callAddTodo, subscribe } = useFetch('todo');
-	let data: ResponseData | null = null,
+	const { executeFetch: callAddTodo, subscribe } = useFetch<IUserFetchResponse>('todo');
+	let fetchState: IFetchState<IUserFetchResponse> | null = null,
 		loading: boolean = false;
 
 	subscribe((val) => {
-		(data = val.data), (loading = val.loading);
+		(fetchState = val), (loading = val.loading);
 	});
 
 	const addTodo = async (e: Event) => {
@@ -31,11 +32,11 @@
 			title: '',
 			description: ''
 		};
+		const data = fetchState?.data;
+		if (data?.success) {
+			callSuccessToast(data?.message || 'New todo added to your list');
 
-		if(data?.success){
-			callSuccessToast(data?.message || "New todo added to your list")
-
-			todos.update((list)=> [...list, data?.data])
+			todos.update((list) => [...list, data?.data]);
 		}
 	};
 </script>

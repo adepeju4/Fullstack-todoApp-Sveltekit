@@ -1,24 +1,23 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { UserInstance } from "./sequelize/models/user.model";
+import type { TodoAttributes } from './sequelize/models/todo.model';
+import type { UserInstance } from './sequelize/models/user.model';
 
 export interface ISession {
 	user: UserInstance;
 }
 
-
-
 // for information about these interfaces
 declare global {
 	namespace App {
-		 interface Error {
-			id?: string
+		interface Error {
+			id?: string;
 			code: string;
 			message: string;
-		 }
+		}
 		interface Locals {
 			user?: UserInstance;
-			db: unknown
+			db: unknown;
 		}
 
 		interface LoadInput {
@@ -28,9 +27,39 @@ declare global {
 		// interface PageData {}
 		// interface Platform {}
 	}
-	interface Request{
+	interface Request {
 		user: UserInstance;
 	}
 }
 
-export {};
+type FetchOptions = {
+	method?: string;
+	queryParams?: Record<string, string>;
+	body?: unknown;
+};
+
+type IFetchState<T> = {
+	loading: boolean;
+	error: Error | null;
+	data: T | null;
+};
+
+interface IFetchResponse<T> {
+	success: boolean;
+	message: string;
+	data: T;
+}
+
+type ITodoFetchResponse = IFetchResponse<TodoAttributes>;
+type ITodosFetchResponse = IFetchResponse<TodoAttributes[]>;
+
+type IUserFetchResponse = IFetchResponse<IUserAttributes>;
+
+export {
+	IFetchResponse,
+	FetchOptions,
+	IFetchState,
+	ITodoFetchResponse,
+	IUserFetchResponse,
+	ITodosFetchResponse
+};

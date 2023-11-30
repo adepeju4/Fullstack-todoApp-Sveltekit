@@ -86,8 +86,6 @@ export const handleError = ({
 	error
 }: Parameters<import('@sveltejs/kit').HandleServerError>[0]) => {
 	const err = error as { message: string; statusCode: number };
-
-	console.log(err, 'status code');
 	return {
 		message: err.message,
 		code: err.statusCode

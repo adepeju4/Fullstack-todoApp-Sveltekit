@@ -1,19 +1,19 @@
 <script lang="ts">
 	import { useFetch } from '../../../hooks.client';
 	import { goto } from '$app/navigation';
-	import type { ResponseData } from '$lib/store';
+	import type {  IFetchState, IUserFetchResponse } from '../../../app';
 
 	let userInput = {
 		email: '',
 		password: ''
 	};
 
-	const { executeFetch, subscribe } = useFetch('auth/login');
-	let data: ResponseData | null = null,
+	const { executeFetch, subscribe } = useFetch<IUserFetchResponse>('auth/login');
+	let fetchState: IFetchState<IUserFetchResponse> | null = null,
 		loading: boolean = false;
 
 	subscribe((val) => {
-		(data = val.data), (loading = val.loading);
+		(fetchState = val), (loading = val.loading);
 	});
 
 	const loginUser = async (e: Event) => {
@@ -24,7 +24,7 @@
 		});
 	};
 
-	$: if (data) goto('/', { replaceState: true });
+	$: if (fetchState?.data?.success) goto('/', { replaceState: true });
 </script>
 
 <form on:submit={loginUser} class="login">

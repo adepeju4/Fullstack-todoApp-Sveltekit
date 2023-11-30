@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { ResponseData } from '$lib/store';
+	import type { IFetchState, IUserFetchResponse } from '../../../app';
+	
 
 	import { useFetch } from '../../../hooks.client';
 
@@ -11,12 +12,12 @@
 		password: ''
 	};
 
-	const { executeFetch, subscribe } = useFetch('auth/signup');
-	let data: ResponseData | null = null,
+	const { executeFetch, subscribe } = useFetch<IUserFetchResponse>('auth/signup');
+	let fetchState: IFetchState<IUserFetchResponse> | null = null,
 		loading: boolean = false;
 
 	subscribe((val) => {
-		(data = val.data), (loading = val.loading);
+		(fetchState = val), (loading = val.loading);
 	});
 
 	const handleSubmit = async (e: Event) => {
@@ -27,7 +28,7 @@
 		});
 	};
 
-	$: if (data) goto('/');
+	$: if (fetchState?.data?.success) goto('/');
 
 </script>
 

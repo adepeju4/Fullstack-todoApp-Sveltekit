@@ -1,20 +1,22 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { ResponseData } from '$lib/store';
+
+	import type { IFetchState, IUserFetchResponse } from '../app';
 	import { useFetch } from '../hooks.client';
 
-	const { executeFetch: logout, subscribe } = useFetch('auth/logout');
+	const { executeFetch: logout, subscribe } = useFetch<IUserFetchResponse>('auth/logout');
 
-	let data: ResponseData | null = null,
+	let fetchState: IFetchState<IUserFetchResponse> | null = null,
 		loading: boolean = false;
 
 	subscribe((val) => {
-		(data = val.data), (loading = val.loading);
+		(fetchState = val), (loading = val.loading);
 	});
 
-	$: if (data) {
-		const { success } = data;
-		if (success) {
+	$: if (fetchState) {
+		const data = fetchState.data;
+		
+		if (data?.success) {
 			goto('/auth/login');
 		}
 	}

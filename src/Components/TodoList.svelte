@@ -1,29 +1,30 @@
 <script lang="ts">
-	import { derived } from 'svelte/store';
+	
 	import Todo from '../Components/Todo.svelte';
-	import { todos, type ResponseData } from '$lib/store';
+	import { todos } from '$lib/store';
 	import { useFetch } from '../hooks.client';
 	import type { TodoAttributes } from '../sequelize/models/todo.model';
 	import { onMount } from 'svelte';
+	import type { IFetchState, ITodosFetchResponse } from '../app';
 
-	const { executeFetch, subscribe } = useFetch('todo');
+	const { executeFetch, subscribe } = useFetch<ITodosFetchResponse>('todo');
 
 	let filtered: TodoAttributes[] = [];
 	let filter: string = 'all';
 	let sortOrder: string = 'asc';
 
-	let data: ResponseData | null = null,
+	let fetchState: IFetchState<ITodosFetchResponse> | null = null,
 		loading: boolean = false;
 
 	subscribe((val) => {
-		(data = val.data), (loading = val.loading);
+		(fetchState = val), (loading = val.loading);
 	});
 	export const getTodos = (): void => {
 		executeFetch();
 	};
 
-	$: if (data) {
-		todos.set(data.data as TodoAttributes[]);
+	$: if (fetchState?.data?.success) {
+		todos.set(fetchState?.data?.data as TodoAttributes[]);
 	}
 
 	$: todos.subscribe((list) => {

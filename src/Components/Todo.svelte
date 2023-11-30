@@ -5,31 +5,30 @@
 	import ToggleSwitchOff from 'svelte-material-icons/ToggleSwitchOff.svelte';
 	import { callSuccessToast, useFetch } from '../hooks.client';
 	import type { TodoAttributes } from '../sequelize/models/todo.model';
-	import { todos, type ResponseData } from '$lib/store';
+	import { todos } from '$lib/store';
+	import type { IFetchResponse, IFetchState, ITodoFetchResponse } from '../app';
 
 	export let todo: TodoAttributes;
 	let editMode: boolean = false;
 	let editLoading: boolean = false;
 
-	const { executeFetch: callEditTodo, subscribe: editSubscribe } = useFetch(
+	const { executeFetch: callEditTodo, subscribe: editSubscribe } = useFetch<ITodoFetchResponse>(
 		'todo/update/' + todo.id
 	);
-	const { executeFetch: callDeleteTodo, subscribe: deleteSubscribe } = useFetch(
+	const { executeFetch: callDeleteTodo, subscribe: deleteSubscribe } = useFetch<ITodoFetchResponse>(
 		'todo/delete/' + todo.id
 	);
-	const { executeFetch: callToggleTodo, subscribe: toggleSubscribe } = useFetch(
+	const { executeFetch: callToggleTodo, subscribe: toggleSubscribe } = useFetch<ITodoFetchResponse>(
 		'todo/toggle/' + todo.id
 	);
 
 	const todoActions = {
 		editTodo: async (body: { title: string; description: string }) => {
 			editLoading = true;
-			let data: ResponseData | null = null,
-				loading: boolean = false;
+			let data: IFetchState<ITodoFetchResponse> | null = null;
 
 			editSubscribe((val) => {
-				data = val.data;
-				loading = val.loading;
+				data = val;
 			});
 
 			await callEditTodo({
@@ -38,7 +37,7 @@
 			});
 
 			if (data) {
-				const { success } = data;
+				const { success } = data as ITodoFetchResponse;
 
 				if (success) {
 					const todoIdx = $todos.findIndex((t) => t.id === todo.id);
@@ -58,12 +57,10 @@
 		},
 
 		deleteTodo: async () => {
-			let data: ResponseData | null = null,
-				loading: boolean = false;
+			let data: IFetchState<ITodoFetchResponse> | null = null;
 
 			deleteSubscribe((val) => {
-				data = val.data;
-				loading = val.loading;
+				data = val;
 			});
 			await callDeleteTodo({
 				method: 'DELETE'
@@ -73,7 +70,7 @@
 				const { success } = data;
 
 				if (success) {
-                    const newState = [...$todos]
+					const newState = [...$todos];
 					const todoIndex = newState.findIndex((td) => td.id === todo.id);
 
 					if (todoIndex !== -1) {
@@ -87,28 +84,26 @@
 		},
 
 		toggleTodo: async () => {
-			let data: ResponseData | null = null,
-				loading: boolean = false;
+			let fetchState: IFetchState<ITodoFetchResponse> | null = null;
 
 			toggleSubscribe((val) => {
-				data = val.data;
-				loading = val.loading;
+				fetchState = val;
 			});
+
 			await callToggleTodo({
 				method: 'PATCH'
 			});
 
-			if (data) {
-				const { success, data: toggleData } = data as ResponseData;
+			if (fetchState) {
+				const { data } = fetchState as IFetchState<ITodoFetchResponse>;
 
-				if (success && toggleData) {
-					const completed = toggleData.completed;
+				if (data) {
+					const completed: boolean = data.data.completed;
 
 					const newList = $todos.map((td) => {
 						td.id === todo.id ? (td = { ...todo, completed }) : todo;
 						return td;
 					});
-
 
 					todos.set(newList);
 
@@ -150,7 +145,7 @@
 			{/if}
 		</button>
 		<button class="delete--action" on:click={todoActions.deleteTodo}>
-			<TrashCan  />
+			<TrashCan />
 		</button>
 		<button class="toggle--action" on:click={todoActions.toggleTodo}>
 			{#if todo.completed}
